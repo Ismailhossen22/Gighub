@@ -17,43 +17,52 @@ namespace GigHub.Controllers
 
         public GigsController()
         {
-            _context=new ApplicationDbContext();
+            _context = new ApplicationDbContext();
         }
+
         [Authorize]
         public ActionResult Create()
         {
             var ViewModel = new GigViewModel
             {
-              Genres= _context.Genres.ToList()
+                Genres = _context.Genres.ToList()
 
             };
 
-            return View( ViewModel);
+            return View(ViewModel);
         }
 
-        //[Authorize]
-        //[HttpPost]
-        //public ActionResult Create(GigViewModel gigViewModel)
-        //{
-        //    //  var artist = _context.Users.Single(u => u.Id == artistId);
-        //  //  var genre = _context.Genres.Single(g => g.Id == gigViewModel.Genre);
+        [Authorize]
+        [HttpPost]
+        public ActionResult create(GigViewModel gigviewmodel)
+        {
+            if (!ModelState.IsValid)
+            {
 
-        //    var gig = new Gig
-        //    {
-        //        ArtistId = User.Identity.GetUserId(),
-        //        DateTime = gigViewModel.DateTime,
+                gigviewmodel.Genres = _context.Genres.ToList();
+                return View("Creat", gigviewmodel);
+            }
+               
 
-        //        GenreId = gigViewModel.Genre,
+            var gig = new Gig
+            {
+                ArtistId = User.Identity.GetUserId(),
+                DateTime = gigviewmodel.GetDateTime(),
 
-        //        Venue = gigViewModel.Venue
+                GenreId = gigviewmodel.Genre,
+
+                Venue = gigviewmodel.Venue
 
 
 
-        //    };
-        //     _context.Gigs.Add(gig);
-        //    _context.SaveChanges();
+            };
+            _context.Gigs.Add(gig);
+            _context.SaveChanges();
 
-        //    return RedirectToAction("Index","Home");
-        //}
+            return RedirectToAction("index", "home");
+
+        }
     }
 }
+
+
